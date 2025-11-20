@@ -37,10 +37,6 @@ public struct AWSCredentials: Sendable {
     ) throws {
         self.accessKeyId = try EnvironmentExtractor.value(accessKeyIdSymbol)
         self.secretAccessKey = try EnvironmentExtractor.value(secretAccessKeySymbol)
-        var sesTok: String?
-        sessionTokenSymbol.ifNotNil { value in 
-            sesTok = try? EnvironmentExtractor.value(.symbol(value))
-        }   
-        self.sessionToken = sesTok
+        self.sessionToken = EnvironmentExtractor.optional(sessionTokenSymbol)
     }
 }
