@@ -1,5 +1,6 @@
 import Foundation
-import plate
+import Milieu
+import Methods
 
 public struct AWSCredentials: Sendable {
     public let accessKeyId: String

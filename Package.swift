@@ -15,13 +15,15 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/leviouwendijk/plate.git", branch: "master"),
+        .package(url: "https://github.com/leviouwendijk/Methods.git", branch: "master"),
+        .package(url: "https://github.com/leviouwendijk/Milieu.git", branch: "master"),
     ],
     targets: [
         .target(
             name: "AWSConnector",
             dependencies: [
-                .product(name: "plate", package: "plate"),
+                .product(name: "Methods", package: "Methods"),
+                .product(name: "Milieu", package: "Milieu"),
             ]
         ),
         .testTarget(
