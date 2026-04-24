@@ -1,5 +1,5 @@
 {
-  "originHash" : "db87df1564177379b807907730d9159b643833a04cdb3c2c05b936f04afcf23f",
+  "originHash" : "562941b00f7b7fb231f01a8fb577dcd72391c8a85338ab2adfc50cdbbaecd7ca",
   "pins" : [
     {
       "identity" : "methods",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/leviouwendijk/Methods.git",
       "state" : {
         "branch" : "master",
-        "revision" : "3668117392a5e07ba36ba461adb90f1805461c3e"
+        "revision" : "47d7bf31c1e547238c1900fe4a1f6961b6cc19bb"
       }
     },
     {
