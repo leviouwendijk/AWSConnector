@@ -24,6 +24,13 @@ public struct BedrockRuntimeClient: Sendable {
             runtime: self
         )
     }
+
+    public static func resolve() throws -> Self {
+        BedrockRuntimeClient(
+            region: try AWSRegion.resolve(),
+            credentials: try AWSCredentials.resolve()
+        )
+    }
 }
 
 public struct BedrockRuntimeConverseClient: Sendable {
