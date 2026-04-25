@@ -17,6 +17,7 @@ struct AWSConnectorTestSuite: TestFlowRegistry {
     ] + (
         live
             ? BedrockControlPlaneLiveFlowTests.flows
+                + BedrockRuntimeLiveFlowTests.flows
             : []
     )
 }
