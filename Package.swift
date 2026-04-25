@@ -13,10 +13,17 @@ let package = Package(
             name: "AWSConnector",
             targets: ["AWSConnector"]
         ),
+        .executable(
+            name: "awstest",
+            targets: ["AWSConnectorTestFlows"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/leviouwendijk/Methods.git", branch: "master"),
         .package(url: "https://github.com/leviouwendijk/Milieu.git", branch: "master"),
+        .package(url: "https://github.com/leviouwendijk/Primitives.git", branch: "master"),
+
+        .package(url: "https://github.com/leviouwendijk/TestFlows.git", branch: "master"),
     ],
     targets: [
         .target(
@@ -24,11 +31,15 @@ let package = Package(
             dependencies: [
                 .product(name: "Methods", package: "Methods"),
                 .product(name: "Milieu", package: "Milieu"),
+                .product(name: "Primitives", package: "Primitives"),
             ]
         ),
-        .testTarget(
-            name: "AWSConnectorTests",
-            dependencies: ["AWSConnector"]
+        .executableTarget(
+            name: "AWSConnectorTestFlows",
+            dependencies: [
+                "AWSConnector",
+                .product(name: "TestFlows", package: "TestFlows"),
+            ]
         ),
     ]
 )

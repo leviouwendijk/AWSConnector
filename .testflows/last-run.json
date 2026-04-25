@@ -1,0 +1,113 @@
+{
+  "failed" : 0,
+  "failed_names" : [
+
+  ],
+  "generated_at" : "2026-04-25T22:22:50Z",
+  "passed" : 9,
+  "results" : [
+    {
+      "display_name" : "bedrock-request-signing-and-path",
+      "duration_seconds" : 0.009832978248596191,
+      "name" : "bedrock-request-signing-and-path",
+      "status" : "passed",
+      "tags" : [
+        "bedrock",
+        "request",
+        "stream"
+      ]
+    },
+    {
+      "display_name" : "bedrock-stream-text-and-metadata",
+      "duration_seconds" : 0.00203096866607666,
+      "name" : "bedrock-stream-text-and-metadata",
+      "status" : "passed",
+      "tags" : [
+        "bedrock",
+        "stream"
+      ]
+    },
+    {
+      "display_name" : "bedrock-stream-tool-use",
+      "duration_seconds" : 0.001177072525024414,
+      "name" : "bedrock-stream-tool-use",
+      "status" : "passed",
+      "tags" : [
+        "bedrock",
+        "stream",
+        "tools"
+      ]
+    },
+    {
+      "display_name" : "bedrock-stream-service-error-event",
+      "duration_seconds" : 0.0007129907608032227,
+      "name" : "bedrock-stream-service-error-event",
+      "status" : "passed",
+      "tags" : [
+        "bedrock",
+        "errors",
+        "stream"
+      ]
+    },
+    {
+      "display_name" : "bedrock-stream-http-error-body",
+      "duration_seconds" : 0.001242995262145996,
+      "name" : "bedrock-stream-http-error-body",
+      "status" : "passed",
+      "tags" : [
+        "bedrock",
+        "errors",
+        "stream"
+      ]
+    },
+    {
+      "display_name" : "bedrock-list-foundation-models",
+      "duration_seconds" : 0.0007109642028808594,
+      "name" : "bedrock-list-foundation-models",
+      "status" : "passed",
+      "tags" : [
+        "bedrock",
+        "control-plane",
+        "models"
+      ]
+    },
+    {
+      "display_name" : "bedrock-get-inference-profile",
+      "duration_seconds" : 0.0007060766220092773,
+      "name" : "bedrock-get-inference-profile",
+      "status" : "passed",
+      "tags" : [
+        "bedrock",
+        "control-plane",
+        "inference-profile"
+      ]
+    },
+    {
+      "display_name" : "live-bedrock-list-foundation-models",
+      "duration_seconds" : 0.28561997413635254,
+      "name" : "live-bedrock-list-foundation-models",
+      "status" : "passed",
+      "tags" : [
+        "bedrock",
+        "control-plane",
+        "live",
+        "models"
+      ]
+    },
+    {
+      "display_name" : "live-bedrock-get-inference-profile",
+      "duration_seconds" : 0.34794890880584717,
+      "name" : "live-bedrock-get-inference-profile",
+      "status" : "passed",
+      "tags" : [
+        "bedrock",
+        "control-plane",
+        "inference-profile",
+        "live"
+      ]
+    }
+  ],
+  "skipped" : 0,
+  "title" : "AWSConnector flow tests",
+  "total" : 9
+}

@@ -64,9 +64,28 @@ public struct AWSSigV4Signer: Sendable {
 
         let method = request.httpMethod ?? "GET"
 
+        // let path: String = {
+        //     let p = url.path
+        //     return p.isEmpty ? "/" : p
+        // }()
+
         let path: String = {
-            let p = url.path
-            return p.isEmpty ? "/" : p
+            guard
+                let components = URLComponents(
+                    url: url,
+                    resolvingAgainstBaseURL: false
+                )
+            else {
+                let p = url.path
+                return p.isEmpty ? "/" : canonicalURIPath(
+                    fromPercentEncodedPath: p
+                )
+            }
+
+            let p = components.percentEncodedPath
+            return p.isEmpty ? "/" : canonicalURIPath(
+                fromPercentEncodedPath: p
+            )
         }()
 
         let canonicalQuery = canonicalQueryString(from: url)
@@ -224,4 +243,24 @@ private func deriveSigningKey(
     let kService = hmacSHA256(key: kRegion, data: Data(service.utf8))
     let kSigning = hmacSHA256(key: kService, data: Data("aws4_request".utf8))
     return kSigning
+}
+
+private func canonicalURIPath(
+    fromPercentEncodedPath path: String
+) -> String {
+    path
+        .split(
+            separator: "/",
+            omittingEmptySubsequences: false
+        )
+        .map { segment in
+            awsPercentEncode(
+                String(
+                    segment
+                )
+            )
+        }
+        .joined(
+            separator: "/"
+        )
 }
