@@ -18,7 +18,7 @@ enum BedrockControlPlaneLiveFlowTests {
                 "live"
             ]
         ) {
-            let client = try liveClient()
+            let client = try BedrockClient.resolve()
 
             let response = try await client.models.list(
                 .init(
@@ -54,7 +54,7 @@ enum BedrockControlPlaneLiveFlowTests {
                 "live"
             ]
         ) {
-            let client = try liveClient()
+            let client = try BedrockClient.resolve()
             let env = ProcessInfo.processInfo.environment
 
             let requestedModelIdentifier = env["AWS_BEDROCK_PROFILE_MODEL_ID"]
@@ -116,14 +116,5 @@ enum BedrockControlPlaneLiveFlowTests {
                 )
             ]
         }
-    }
-}
-
-private extension BedrockControlPlaneLiveFlowTests {
-    static func liveClient() throws -> BedrockClient {
-        BedrockClient(
-            region: try AWSRegion.resolve(),
-            credentials: try AWSCredentials.resolve()
-        )
     }
 }

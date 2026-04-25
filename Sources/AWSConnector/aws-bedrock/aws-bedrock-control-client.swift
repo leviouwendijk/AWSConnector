@@ -29,6 +29,13 @@ public struct BedrockClient: Sendable {
             bedrock: self
         )
     }
+
+    public static func resolve() throws -> Self {
+        BedrockClient(
+            region: try AWSRegion.resolve(),
+            credentials: try AWSCredentials.resolve()
+        )
+    }
 }
 
 public struct BedrockModelsClient: Sendable {
