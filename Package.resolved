@@ -1,5 +1,5 @@
 {
-  "originHash" : "0e9eb30985e2e72795ea9dea97567cc557bc539b031ef46fe147a84cb5f3c40f",
+  "originHash" : "5d1c45550014394e29b33dc4e76a0e19098e9bc7f2e5ac6c41e92b4b3a13a954",
   "pins" : [
     {
       "identity" : "ansi",
@@ -8,6 +8,15 @@
       "state" : {
         "branch" : "master",
         "revision" : "073d9ca7870b688a312608acf14eae6ba052c0d6"
+      }
+    },
+    {
+      "identity" : "cryptography",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Cryptography.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "7357269b51d0d1b5b2f227741ce1bd8c558acfff"
       }
     },
     {

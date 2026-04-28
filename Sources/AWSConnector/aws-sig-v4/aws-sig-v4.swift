@@ -1,5 +1,6 @@
 import Foundation
-import CryptoKit
+// import CryptoKit
+import Cryptography
 
 public struct AWSSigV4Signer: Sendable {
     public let credentials: AWSCredentials
@@ -165,30 +166,88 @@ private func trimmedHeaderValue(_ value: String) -> String {
     return components.joined(separator: " ")
 }
 
-private func canonicalQueryString(from url: URL) -> String {
-    guard let query = url.query, !query.isEmpty else {
+private func canonicalQueryString(
+    from url: URL
+) -> String {
+    guard
+        let components = URLComponents(
+            url: url,
+            resolvingAgainstBaseURL: false
+        ),
+        let query = components.percentEncodedQuery,
+        !query.isEmpty
+    else {
         return ""
     }
 
-    // Simple implementation: split on "&" and "=", sort by key, and re-encode.
-    // For SES SendEmail we typically have no query params, so this is mostly unused.
-    let items = query.split(separator: "&").compactMap { pair -> (String, String)? in
-        let parts = pair.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
-        let name = String(parts[0])
-        let value = parts.count > 1 ? String(parts[1]) : ""
-        return (name, value)
+    let items = query.split(
+        separator: "&",
+        omittingEmptySubsequences: false
+    ).map { pair -> (
+        name: String,
+        value: String,
+        rendered: String
+    ) in
+        let parts = pair.split(
+            separator: "=",
+            maxSplits: 1,
+            omittingEmptySubsequences: false
+        )
+
+        let name = String(
+            parts[0]
+        )
+        let value = parts.count > 1
+            ? String(
+                parts[1]
+            )
+            : ""
+
+        return (
+            name: name,
+            value: value,
+            rendered: "\(name)=\(value)"
+        )
     }
 
-    let sorted = items.sorted { $0.0 < $1.0 }
+    return items
+        .sorted { lhs, rhs in
+            if lhs.name == rhs.name {
+                return lhs.value < rhs.value
+            }
 
-    return sorted
-        .map { name, value in
-            let encodedName = awsPercentEncode(name)
-            let encodedValue = awsPercentEncode(value)
-            return "\(encodedName)=\(encodedValue)"
+            return lhs.name < rhs.name
         }
-        .joined(separator: "&")
+        .map(\.rendered)
+        .joined(
+            separator: "&"
+        )
 }
+
+// private func canonicalQueryString(from url: URL) -> String {
+//     guard let query = url.query, !query.isEmpty else {
+//         return ""
+//     }
+
+//     // Simple implementation: split on "&" and "=", sort by key, and re-encode.
+//     // For SES SendEmail we typically have no query params, so this is mostly unused.
+//     let items = query.split(separator: "&").compactMap { pair -> (String, String)? in
+//         let parts = pair.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+//         let name = String(parts[0])
+//         let value = parts.count > 1 ? String(parts[1]) : ""
+//         return (name, value)
+//     }
+
+//     let sorted = items.sorted { $0.0 < $1.0 }
+
+//     return sorted
+//         .map { name, value in
+//             let encodedName = awsPercentEncode(name)
+//             let encodedValue = awsPercentEncode(value)
+//             return "\(encodedName)=\(encodedValue)"
+//         }
+//         .joined(separator: "&")
+// }
 
 // private func awsPercentEncode(_ value: String) -> String {
 //     // AWS percent-encoding: encode everything except unreserved chars.
@@ -209,27 +268,54 @@ private func canonicalQueryString(from url: URL) -> String {
 //     return encoded
 // }
 
-private func sha256Hex(of data: Data) -> String {
-    let digest = SHA256.hash(data: data)
-    return digest.map { String(format: "%02x", $0) }.joined()
+private func sha256Hex(
+    of data: Data
+) -> String {
+    CryptographicDigest.sha256Hex(
+        data
+    )
 }
 
 private func hmacSHA256(
     key: Data,
     data: Data
 ) -> Data {
-    let keySym = SymmetricKey(data: key)
-    let mac = HMAC<SHA256>.authenticationCode(for: data, using: keySym)
-    return Data(mac)
+    CryptographicHMAC.sha256(
+        key: key,
+        data: data
+    )
 }
 
 private func hmacSHA256Hex(
     key: Data,
     data: Data
 ) -> String {
-    let mac = hmacSHA256(key: key, data: data)
-    return mac.map { String(format: "%02x", $0) }.joined()
+    CryptographicHMAC.sha256Hex(
+        key: key,
+        data: data
+    )
 }
+// private func sha256Hex(of data: Data) -> String {
+//     let digest = SHA256.hash(data: data)
+//     return digest.map { String(format: "%02x", $0) }.joined()
+// }
+
+// private func hmacSHA256(
+//     key: Data,
+//     data: Data
+// ) -> Data {
+//     let keySym = SymmetricKey(data: key)
+//     let mac = HMAC<SHA256>.authenticationCode(for: data, using: keySym)
+//     return Data(mac)
+// }
+
+// private func hmacSHA256Hex(
+//     key: Data,
+//     data: Data
+// ) -> String {
+//     let mac = hmacSHA256(key: key, data: data)
+//     return mac.map { String(format: "%02x", $0) }.joined()
+// }
 
 private func deriveSigningKey(
     secretKey: String,

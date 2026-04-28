@@ -22,7 +22,7 @@ let package = Package(
         .package(url: "https://github.com/leviouwendijk/Methods.git", branch: "master"),
         .package(url: "https://github.com/leviouwendijk/Milieu.git", branch: "master"),
         .package(url: "https://github.com/leviouwendijk/Primitives.git", branch: "master"),
-
+        .package(url: "https://github.com/leviouwendijk/Cryptography.git", branch: "master"),
         .package(url: "https://github.com/leviouwendijk/TestFlows.git", branch: "master"),
     ],
     targets: [
@@ -32,6 +32,7 @@ let package = Package(
                 .product(name: "Methods", package: "Methods"),
                 .product(name: "Milieu", package: "Milieu"),
                 .product(name: "Primitives", package: "Primitives"),
+                .product(name: "Cryptography", package: "Cryptography"),
             ]
         ),
         .executableTarget(
