@@ -109,7 +109,7 @@ public struct BedrockInferenceProfilesClient: Sendable {
         identifier: String
     ) async throws -> Bedrock.InferenceProfiles.Profile {
         try await bedrock.send(
-            path: "/inference-profiles/\(bedrockPathEncode(identifier))",
+            path: "/inference-profiles/\(awsPercentEncode(identifier))",
             response: Bedrock.InferenceProfiles.Profile.self
         )
     }
@@ -280,37 +280,19 @@ private func percentEncodedQuery(
         return ""
     }
 
-    var components = URLComponents()
-    components.queryItems = items
+    return items.map { item in
+        let name = awsPercentEncode(
+            item.name
+        )
 
-    return components.percentEncodedQuery ?? ""
-}
-
-private func bedrockPathEncode(
-    _ value: String
-) -> String {
-    let unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~"
-    var encoded = ""
-
-    for byte in value.utf8 {
-        let scalar = UnicodeScalar(byte)
-        let character = Character(scalar)
-
-        if unreserved.contains(character) {
-            encoded.append(
-                character
-            )
-        } else {
-            encoded.append(
-                String(
-                    format: "%%%02X",
-                    byte
-                )
-            )
+        guard let value = item.value else {
+            return name
         }
-    }
 
-    return encoded
+        return "\(name)=\(awsPercentEncode(value))"
+    }.joined(
+        separator: "&"
+    )
 }
 
 public extension BedrockModelsClient {

@@ -190,24 +190,24 @@ private func canonicalQueryString(from url: URL) -> String {
         .joined(separator: "&")
 }
 
-private func awsPercentEncode(_ value: String) -> String {
-    // AWS percent-encoding: encode everything except unreserved chars.
-    let unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~"
-    var encoded = ""
+// private func awsPercentEncode(_ value: String) -> String {
+//     // AWS percent-encoding: encode everything except unreserved chars.
+//     let unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~"
+//     var encoded = ""
 
-    for byte in value.utf8 {
-        let scalar = UnicodeScalar(byte)
-        let character = Character(scalar)
+//     for byte in value.utf8 {
+//         let scalar = UnicodeScalar(byte)
+//         let character = Character(scalar)
 
-        if unreserved.contains(character) {
-            encoded.append(character)
-        } else {
-            encoded.append(String(format: "%%%02X", byte))
-        }
-    }
+//         if unreserved.contains(character) {
+//             encoded.append(character)
+//         } else {
+//             encoded.append(String(format: "%%%02X", byte))
+//         }
+//     }
 
-    return encoded
-}
+//     return encoded
+// }
 
 private func sha256Hex(of data: Data) -> String {
     let digest = SHA256.hash(data: data)

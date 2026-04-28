@@ -50,7 +50,7 @@ public struct BedrockRuntimeConverseClient: Sendable {
             let task = Task {
                 do {
                     let urlRequest = try runtime.request(
-                        path: "/model/\(bedrockPathEncode(modelIdentifier))/converse-stream",
+                        path: "/model/\(awsPercentEncode(modelIdentifier))/converse-stream",
                         body: try runtime.json.encoder.encode(
                             request
                         )
