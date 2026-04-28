@@ -313,3 +313,39 @@ private func bedrockPathEncode(
     return encoded
 }
 
+public extension BedrockModelsClient {
+    func listAll(
+        _ request: Bedrock.Models.ListRequest = .init()
+    ) async throws -> [Bedrock.Models.Summary] {
+        try await list(
+            request
+        ).modelSummaries
+    }
+}
+
+public extension BedrockInferenceProfilesClient {
+    func listAll(
+        _ request: Bedrock.InferenceProfiles.ListRequest = .init()
+    ) async throws -> [Bedrock.InferenceProfiles.Summary] {
+        var summaries: [Bedrock.InferenceProfiles.Summary] = []
+        var nextToken = request.nextToken
+
+        repeat {
+            let response = try await list(
+                .init(
+                    maxResults: request.maxResults,
+                    nextToken: nextToken,
+                    typeEquals: request.typeEquals
+                )
+            )
+
+            summaries.append(
+                contentsOf: response.inferenceProfileSummaries
+            )
+
+            nextToken = response.nextToken
+        } while nextToken != nil
+
+        return summaries
+    }
+}
