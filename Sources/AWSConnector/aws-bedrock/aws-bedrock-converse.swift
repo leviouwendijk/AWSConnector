@@ -410,3 +410,75 @@ public extension Bedrock.Converse {
         }
     }
 }
+
+
+public extension Bedrock.Converse {
+    struct Response: Sendable, Codable, Hashable {
+        public var output: Output
+        public var stopReason: String?
+        public var usage: Usage?
+        public var metrics: Metrics?
+        public var additionalModelResponseFields: JSONValue?
+
+        public init(
+            output: Output,
+            stopReason: String? = nil,
+            usage: Usage? = nil,
+            metrics: Metrics? = nil,
+            additionalModelResponseFields: JSONValue? = nil
+        ) {
+            self.output = output
+            self.stopReason = stopReason
+            self.usage = usage
+            self.metrics = metrics
+            self.additionalModelResponseFields = additionalModelResponseFields
+        }
+    }
+
+    enum Output: Sendable, Codable, Hashable {
+        case message(Message)
+
+        private enum CodingKeys: String, CodingKey {
+            case message
+        }
+
+        public init(
+            from decoder: any Decoder
+        ) throws {
+            let container = try decoder.container(
+                keyedBy: CodingKeys.self
+            )
+
+            if let message = try container.decodeIfPresent(
+                Message.self,
+                forKey: .message
+            ) {
+                self = .message(message)
+                return
+            }
+
+            throw DecodingError.dataCorrupted(
+                .init(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Unsupported Bedrock Converse output."
+                )
+            )
+        }
+
+        public func encode(
+            to encoder: any Encoder
+        ) throws {
+            var container = encoder.container(
+                keyedBy: CodingKeys.self
+            )
+
+            switch self {
+            case .message(let message):
+                try container.encode(
+                    message,
+                    forKey: .message
+                )
+            }
+        }
+    }
+}

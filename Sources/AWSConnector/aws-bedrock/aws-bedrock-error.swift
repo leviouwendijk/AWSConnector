@@ -6,6 +6,7 @@ public enum BedrockRuntimeError: Error, Sendable, LocalizedError {
     case http(status: Int, body: String)
     case eventstream(String)
     case service(type: String, message: String?)
+    case decode(String)
 
     public var errorDescription: String? {
         switch self {
@@ -27,6 +28,9 @@ public enum BedrockRuntimeError: Error, Sendable, LocalizedError {
             }
 
             return "Bedrock Runtime service error \(type)."
+
+        case .decode(let message):
+            return "Failed to decode Bedrock Runtime response: \(message)"
         }
     }
 }

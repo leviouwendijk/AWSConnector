@@ -42,6 +42,48 @@ public struct BedrockRuntimeConverseClient: Sendable {
         self.runtime = runtime
     }
 
+    public func respond(
+        _ request: Bedrock.Converse.Request,
+        modelIdentifier: String
+    ) async throws -> Bedrock.Converse.Response {
+        let body = try runtime.json.encoder.encode(
+            request
+        )
+        let urlRequest = try runtime.request(
+            path: "/model/\(awsPercentEncode(modelIdentifier))/converse",
+            body: body,
+            accept: "application/json"
+        )
+        let (data, response) = try await runtime.session.data(
+            for: urlRequest
+        )
+
+        guard let http = response as? HTTPURLResponse else {
+            throw BedrockRuntimeError.invalidResponse
+        }
+
+        guard http.statusCode == 200 else {
+            throw BedrockRuntimeError.http(
+                status: http.statusCode,
+                body: String(
+                    data: data,
+                    encoding: .utf8
+                ) ?? "<non-UTF8 body>"
+            )
+        }
+
+        do {
+            return try runtime.json.decoder.decode(
+                Bedrock.Converse.Response.self,
+                from: data
+            )
+        } catch {
+            throw BedrockRuntimeError.decode(
+                error.localizedDescription
+            )
+        }
+    }
+
     public func stream(
         _ request: Bedrock.Converse.Request,
         modelIdentifier: String
@@ -133,7 +175,8 @@ private extension BedrockRuntimeClient {
 
     func request(
         path: String,
-        body: Data
+        body: Data,
+        accept: String = "application/vnd.amazon.eventstream"
     ) throws -> URLRequest {
         let urlString = "https://\(host)\(path)"
 
@@ -155,7 +198,7 @@ private extension BedrockRuntimeClient {
             forHTTPHeaderField: "Content-Type"
         )
         request.setValue(
-            "application/vnd.amazon.eventstream",
+            accept,
             forHTTPHeaderField: "Accept"
         )
         request.setValue(

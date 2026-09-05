@@ -6,6 +6,7 @@ struct AWSConnectorTestSuite: TestFlowRegistry {
     static let title = "AWSConnector flow tests"
 
     static let flows: [TestFlow] = [
+        BedrockRuntimeFlowTests.bufferedResponseAndPath(),
         BedrockRuntimeFlowTests.requestSigningAndPath(),
         BedrockRuntimeFlowTests.streamTextAndMetadata(),
         BedrockRuntimeFlowTests.streamToolUse(),
@@ -14,6 +15,8 @@ struct AWSConnectorTestSuite: TestFlowRegistry {
 
         BedrockControlPlaneFlowTests.listFoundationModels(),
         BedrockControlPlaneFlowTests.getInferenceProfile(),
+
+        AgentCoreGatewayFlowTests.webSearchToolCall(),
     ] + (
         live
             ? BedrockControlPlaneLiveFlowTests.flows

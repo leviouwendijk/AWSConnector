@@ -4,6 +4,116 @@ import Primitives
 import TestFlows
 
 enum BedrockRuntimeFlowTests {
+    static func bufferedResponseAndPath() -> TestFlow {
+        TestFlow(
+            "bedrock-buffered-response-and-path",
+            tags: [
+                "bedrock",
+                "buffered",
+                "request"
+            ]
+        ) {
+            let body = Data(
+                """
+                {
+                  "output": {
+                    "message": {
+                      "role": "assistant",
+                      "content": [
+                        {
+                          "text": "hello"
+                        }
+                      ]
+                    }
+                  },
+                  "stopReason": "end_turn",
+                  "usage": {
+                    "inputTokens": 5,
+                    "outputTokens": 7,
+                    "totalTokens": 12
+                  },
+                  "metrics": {
+                    "latencyMs": 42
+                  }
+                }
+                """.utf8
+            )
+            let client = BedrockFlowSession.client(
+                response: .init(
+                    headers: [
+                        "Content-Type": "application/json"
+                    ],
+                    body: body
+                )
+            )
+            let response = try await client.converse.respond(
+                request(),
+                modelIdentifier: "anthropic.claude-3-5-sonnet-20241022-v2:0"
+            )
+
+            guard case .message(let message) = response.output,
+                  case .text(let text)? = message.content.first
+            else {
+                throw TestFlowAssertionFailure(
+                    label: "buffered response",
+                    message: "expected assistant text output"
+                )
+            }
+
+            try Expect.equal(
+                message.role,
+                .assistant,
+                "response role"
+            )
+            try Expect.equal(
+                text,
+                "hello",
+                "response text"
+            )
+            try Expect.equal(
+                response.usage?.totalTokens,
+                12,
+                "response usage"
+            )
+
+            let recorded = try Expect.notNil(
+                BedrockFlowURLProtocol.recorded().first,
+                "request"
+            )
+            let components = try Expect.notNil(
+                URLComponents(
+                    url: try Expect.notNil(
+                        recorded.request.url,
+                        "url"
+                    ),
+                    resolvingAgainstBaseURL: false
+                ),
+                "urlComponents"
+            )
+
+            try Expect.equal(
+                components.percentEncodedPath,
+                "/model/anthropic.claude-3-5-sonnet-20241022-v2%3A0/converse",
+                "path"
+            )
+            try Expect.equal(
+                recorded.request.value(
+                    forHTTPHeaderField: "Accept"
+                ),
+                "application/json",
+                "accept"
+            )
+            _ = try Expect.notNil(
+                recorded.request.value(
+                    forHTTPHeaderField: "Authorization"
+                ),
+                "authorization"
+            )
+
+            return []
+        }
+    }
+
     static func requestSigningAndPath() -> TestFlow {
         TestFlow(
             "bedrock-request-signing-and-path",
