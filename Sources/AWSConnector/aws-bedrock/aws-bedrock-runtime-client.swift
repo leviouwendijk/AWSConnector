@@ -46,7 +46,8 @@ public struct BedrockRuntimeConverseClient: Sendable {
 
     public func respond(
         _ request: Bedrock.Converse.Request,
-        modelIdentifier: String
+        modelIdentifier: String,
+        timeoutseconds: Int? = nil
     ) async throws -> Bedrock.Converse.Response {
         let body = try runtime.json.encoder.encode(
             request
@@ -54,7 +55,8 @@ public struct BedrockRuntimeConverseClient: Sendable {
         let urlRequest = try runtime.request(
             path: "/model/\(awsPercentEncode(modelIdentifier))/converse",
             body: body,
-            accept: "application/json"
+            accept: "application/json",
+            timeoutseconds: timeoutseconds
         )
         let (data, response) = try await runtime.session.data(
             for: urlRequest
@@ -88,7 +90,8 @@ public struct BedrockRuntimeConverseClient: Sendable {
 
     public func stream(
         _ request: Bedrock.Converse.Request,
-        modelIdentifier: String
+        modelIdentifier: String,
+        timeoutseconds: Int? = nil
     ) -> AsyncThrowingStream<Bedrock.Converse.StreamEvent, Error> {
         AsyncThrowingStream { continuation in
             let task = Task {
@@ -97,7 +100,8 @@ public struct BedrockRuntimeConverseClient: Sendable {
                         path: "/model/\(awsPercentEncode(modelIdentifier))/converse-stream",
                         body: try runtime.json.encoder.encode(
                             request
-                        )
+                        ),
+                        timeoutseconds: timeoutseconds
                     )
 
                     let (bytes, response) = try await runtime.session.bytes(
@@ -178,7 +182,8 @@ private extension BedrockRuntimeClient {
     func request(
         path: String,
         body: Data,
-        accept: String = "application/vnd.amazon.eventstream"
+        accept: String = "application/vnd.amazon.eventstream",
+        timeoutseconds: Int? = nil
     ) throws -> URLRequest {
         let urlString = "https://\(host)\(path)"
 
@@ -193,7 +198,9 @@ private extension BedrockRuntimeClient {
         var request = URLRequest(
             url: url
         )
-        request.timeoutInterval = Self.requestTimeoutInterval
+        request.timeoutInterval =
+            timeoutseconds.map { TimeInterval($0) }
+            ?? Self.requestTimeoutInterval
         request.httpMethod = "POST"
         request.httpBody = body
         request.setValue(
