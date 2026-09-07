@@ -2,6 +2,8 @@ import Foundation
 import Primitives
 
 public struct BedrockRuntimeClient: Sendable {
+    private static let requestTimeoutInterval: TimeInterval = 30 * 60
+
     public let region: String
     public let credentials: AWSCredentials
     public let host: String
@@ -191,6 +193,7 @@ private extension BedrockRuntimeClient {
         var request = URLRequest(
             url: url
         )
+        request.timeoutInterval = Self.requestTimeoutInterval
         request.httpMethod = "POST"
         request.httpBody = body
         request.setValue(
