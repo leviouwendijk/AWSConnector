@@ -16,17 +16,20 @@ public extension Bedrock.Converse {
         public var system: [SystemBlock]?
         public var inferenceConfig: Inference?
         public var toolConfig: ToolConfig?
+        public var outputConfig: OutputConfig?
 
         public init(
             messages: [Message],
             system: [SystemBlock]? = nil,
             inferenceConfig: Inference? = nil,
-            toolConfig: ToolConfig? = nil
+            toolConfig: ToolConfig? = nil,
+            outputConfig: OutputConfig? = nil
         ) {
             self.messages = messages
             self.system = system
             self.inferenceConfig = inferenceConfig
             self.toolConfig = toolConfig
+            self.outputConfig = outputConfig
         }
     }
 
@@ -69,6 +72,78 @@ public extension Bedrock.Converse {
             self.temperature = temperature
             self.topP = topP
             self.stopSequences = stopSequences
+        }
+    }
+
+    struct OutputConfig: Sendable, Codable, Hashable {
+        public var textFormat: OutputFormat?
+
+        public init(
+            textFormat: OutputFormat? = nil
+        ) {
+            self.textFormat = textFormat
+        }
+
+        public static func jsonschema(
+            schema: String,
+            name: String? = nil,
+            description: String? = nil
+        ) -> Self {
+            .init(
+                textFormat: .init(
+                    type: .json_schema,
+                    structure: .init(
+                        jsonSchema: .init(
+                            schema: schema,
+                            name: name,
+                            description: description
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    struct OutputFormat: Sendable, Codable, Hashable {
+        public var type: OutputFormatType
+        public var structure: OutputFormatStructure
+
+        public init(
+            type: OutputFormatType,
+            structure: OutputFormatStructure
+        ) {
+            self.type = type
+            self.structure = structure
+        }
+    }
+
+    enum OutputFormatType: String, Sendable, Codable, Hashable {
+        case json_schema
+    }
+
+    struct OutputFormatStructure: Sendable, Codable, Hashable {
+        public var jsonSchema: JSONSchemaDefinition
+
+        public init(
+            jsonSchema: JSONSchemaDefinition
+        ) {
+            self.jsonSchema = jsonSchema
+        }
+    }
+
+    struct JSONSchemaDefinition: Sendable, Codable, Hashable {
+        public var schema: String
+        public var name: String?
+        public var description: String?
+
+        public init(
+            schema: String,
+            name: String? = nil,
+            description: String? = nil
+        ) {
+            self.schema = schema
+            self.name = name
+            self.description = description
         }
     }
 
